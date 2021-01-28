@@ -71,28 +71,30 @@ app.get("/categoria", verificaToken, ( req, res ) => {
 app.get("/categorias/:id", verificaToken, ( req, res ) => {
     let id = req.params.id;
 
-    Categorias.findById(id, ( error, categoriaDB ) => {
-        if(error){
-            return res.status(400).json({
-                ok: false,
-                error
+    Categorias.findById(id)
+        .populate("usuario", "nombre email")
+        .exec( ( error, categoriaDB ) => {
+            if(error){
+                return res.status(400).json({
+                    ok: false,
+                    error
+                });
+            }
+    
+            if(!categoriaDB){
+                return res.status(400).json({
+                    ok: false,
+                    error: {
+                        message: "No se encontro una categoria con ese ID"
+                    }
+                });
+            }
+    
+            res.json({
+                ok: true,
+                categoria: categoriaDB
             });
-        }
-
-        if(!categoriaDB){
-            return res.status(400).json({
-                ok: false,
-                error: {
-                    message: "No se encontro una categoria con ese ID"
-                }
-            });
-        }
-
-        res.json({
-            ok: true,
-            categoria: categoriaDB
         });
-    });
    
 
 });

@@ -19,6 +19,9 @@ const categoriasSchema = new Schema({
      }
 });
 
+
+
+
 categoriasSchema.plugin(uniqueValidator, { message: `{PATH} debe de ser unico`});
 
 

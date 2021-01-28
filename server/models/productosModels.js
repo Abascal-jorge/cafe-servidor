@@ -22,12 +22,13 @@ const productosSchema = new Schema({
     },
     categoria: {
         type: Schema.Types.ObjectId,
-        ref: "categoria",
+        ref: "Categorias",
         required: true
     },
     usuario:{
         type: Schema.Types.ObjectId,
-        ref: "usuario"
+        ref: "Usuario",
+        required: true
     }
 });
 
