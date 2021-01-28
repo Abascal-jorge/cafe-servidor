@@ -70,9 +70,12 @@ app.put("/productos/:id", verificaToken, ( req, res ) => {
 
 app.get("/productos", verificaToken, ( req, res ) => {
 
-    Productos.find({})
-        .skip(1)
-        .limit(10)
+    let limite = Number(req.query.limite) || 0;
+    let salto = Number(req.query.salto) || 0;
+
+    Productos.find({disponible: true})
+        .skip(salto)
+        .limit(limite)
         .populate("categoria", "categoria")
         .populate("usuario", "nombre email")
         .exec( (error, productoDB ) => {
@@ -92,7 +95,7 @@ app.get("/productos", verificaToken, ( req, res ) => {
                 });
             }
 
-            Productos.count({}, (error, total)=>{
+            Productos.count({disponible: true}, (error, total)=>{
                 if(error){
                     return res.status(500).json({
                         ok: false,
@@ -148,6 +151,38 @@ app.get("/productos/:id", ( req, res ) => {
                     producto: productoDB
                 });
             });
+});
+
+app.delete("/productos/:id", verificaToken, ( req, res ) => {
+
+    let id = req.params.id;
+
+    let datos = {
+        disponible: false
+    }
+
+    Productos.findByIdAndUpdate(id, datos, {new: true}, ( error, productoDB) => {
+        if(error){
+            return res.status(500).json({
+                ok: false,
+                error
+            });
+        }
+
+        if(!productoDB){
+            return res.status(400).json({
+                ok: false,
+                error: {
+                    message: "Producto no encontrado"
+                }
+            });
+        }
+
+        res.json({
+            ok: true,
+            producto: productoDB
+        });
+    });
 });
 
 module.exports = app;
